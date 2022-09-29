@@ -8,8 +8,8 @@ services:
       - MYSQL_DATABASE=cdptw1_groupd
       - MYSQL_ROOT_PASSWORD=groupd
       - MYSQL_ALLOW_EMPTY_PASSWOR=ok
-      - MYSQL_USER=dbuser
-      - MYSQL_PASSWORD=dbuser
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=admin
     expose:
       - "3306"
     ports:
@@ -31,8 +31,8 @@ services:
       NODE_ENV: development
       DB_HOST: db-nestjs
       DB_PORT: 3306
-      DB_USER: dbuser
-      DB_PASSWORD: dbuser
+      DB_USER: admin
+      DB_PASSWORD: admin
       DB_NAME: cdptw1_groupd
     links:
       - db-service
