@@ -34,8 +34,6 @@ services:
       DB_USER: admin
       DB_PASSWORD: admin
       DB_NAME: cdptw1_groupd
-    links:
-      - db-service
     networks:
       - groupd
     volumes:

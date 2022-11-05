@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostModule } from './modules/post/post.module';
-console.log(__dirname);
+import { JobModule } from './modules/job/job.module';
 
 @Module({
   imports: [
@@ -19,6 +19,7 @@ console.log(__dirname);
       autoLoadEntities: true,
     }),
     PostModule,
+    JobModule,
   ],
   controllers: [AppController],
   providers: [AppService],
