@@ -15,11 +15,15 @@ export class JobService {
     await page.goto(URL);
     await page.evaluate(() => {
       document.querySelectorAll('.job').forEach((element) => {
+        function getTextContent(element: Element, selector: string): string {
+          return element.querySelector(selector)?.textContent;
+        }
         const data = {
-          title: element.querySelector('.job__description a')?.textContent,
-          city: element.querySelector('.city .address .text')?.textContent,
+          title: getTextContent(element, '.job__description a'),
         };
         console.log(data);
+
+        // return data;
       });
     });
     // await browser.close();

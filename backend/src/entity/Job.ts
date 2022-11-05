@@ -9,7 +9,6 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
-import { City } from './City';
 import { JobTitle } from './JobTitle';
 import { WorkType } from './WorkType';
 import { Company } from './Company';
