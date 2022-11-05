@@ -8,12 +8,10 @@ import {
 
 @Entity()
 export abstract class AbstractEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdDate: Date;
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   updatedDate: Date;
-  @DeleteDateColumn()
-  deletedAt: Date;
 }
