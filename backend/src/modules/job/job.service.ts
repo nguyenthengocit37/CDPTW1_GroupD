@@ -1,8 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import * as puppeteer from 'puppeteer';
+import { Skill } from 'src/entity/Skill';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class JobService {
+  constructor(
+    @InjectRepository(Skill)
+    private readonly skillReponsitory: Repository<Skill>,
+  ) {}
   sayHello() {
     return 'hello';
   }
@@ -10,22 +17,24 @@ export class JobService {
     const URL = 'https://itviec.com/it-jobs';
     const browser = await puppeteer.launch({
       headless: false,
+      defaultViewport: null,
     });
     const page = await browser.newPage();
     await page.goto(URL);
-    await page.evaluate(() => {
+    const data = await page.evaluate(() => {
+      let skills = {};
       document.querySelectorAll('.job').forEach((element) => {
-        function getTextContent(element: Element, selector: string): string {
-          return element.querySelector(selector)?.textContent;
-        }
         const data = {
-          title: getTextContent(element, '.job__description a'),
+          name: element.querySelector('.job__description a')?.textContent,
         };
-        console.log(data);
-
-        // return data;
+        skills = data;
       });
+      return skills;
     });
+
+    const skill = this.skillReponsitory.create(data);
+    await this.skillReponsitory.save(skill);
+    return skill;
     // await browser.close();
     // return;
   }

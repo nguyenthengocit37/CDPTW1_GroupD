@@ -15,7 +15,7 @@ import { JobModule } from './modules/job/job.module';
       password: process.env.DB_PASSWORD || 'admin',
       database: process.env.DB_NAME || 'cdptw1_groupd',
       entities: ['entity/*{.ts,.js}'],
-      synchronize: process.env.ENV === 'DEV',
+      synchronize: process.env.NODE_ENV !== 'production',
       autoLoadEntities: true,
     }),
     PostModule,
