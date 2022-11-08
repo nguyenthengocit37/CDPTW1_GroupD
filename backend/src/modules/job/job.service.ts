@@ -7,22 +7,35 @@ export class JobService {
     return 'hello';
   }
   async crawlDataViaPuppeteer() {
-    const URL = 'https://itviec.com/it-jobs';
+    const URL = 'https://itviec.com';
     const browser = await puppeteer.launch({
       headless: false,
+      defaultViewport: null,
     });
     const page = await browser.newPage();
-    await page.goto(URL);
-    await page.evaluate(() => {
-      document.querySelectorAll('.job').forEach((element) => {
-        const data = {
-          title: element.querySelector('.job__description a')?.textContent,
-          city: element.querySelector('.city .address .text')?.textContent,
-        };
-        console.log(data);
+    await page.goto(`${URL}/it-jobs`);
+    while (await page.$('.search-page__jobs-pagination a[rel="next"]')) {
+      const hrefs = await page.evaluate(() => {
+        return Array.from(
+          document.querySelectorAll('.job .job__description .title a'),
+        ).map((job) => job.getAttribute('href'));
       });
-    });
-    // await browser.close();
-    // return;
+      for (const href of hrefs) {
+        await page.goto(`${URL}${href}`);
+        const jobDescription = await page.evaluate(
+          () => document.querySelector('.job-details__title')?.textContent,
+        );
+        console.log('hehe', jobDescription);
+        await page.goBack();
+      }
+      await page.evaluate(() => {
+        const element = document.querySelector(
+          '.search-page__jobs-pagination a[rel="next"]',
+        ) as HTMLElement;
+        return element.click();
+      });
+
+      await page.waitForSelector('.job', { visible: true });
+    }
   }
 }
