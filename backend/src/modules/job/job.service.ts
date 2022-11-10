@@ -4,7 +4,7 @@ import slugify from 'slugify';
 
 import { JobCrawl } from './dto/jobCrawl.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { WorkType } from '@root/entity/WorkType';
 import { JobTitle } from '@root/entity/JobTitle';
 import { Skill } from '@root/entity/Skill';
@@ -27,8 +27,6 @@ export class JobService {
     private readonly jobTitleRepository: Repository<JobTitle>,
     @InjectRepository(Skill)
     private readonly skillRepository: Repository<Skill>,
-    @InjectRepository(City)
-    private readonly cityRepository: Repository<City>,
     private readonly cityService: CityService,
   ) {}
   sayHello() {
@@ -98,7 +96,8 @@ export class JobService {
           };
         });
 
-        let companyExist = await this.companyRepository.findOneBy({ name: job.city });
+        let companyExist = await this.companyRepository.findOneBy({ name: job.company.name });
+
         if (!companyExist) {
           let cityExist = await this.cityService.findOneByCondition({ name: job.city });
           if (!cityExist) {
@@ -136,7 +135,7 @@ export class JobService {
         const slug = slugify(`${job.company.name}${job.title}`, {
           lower: true,
         });
-        const jobExist = this.jobRepository.findOneBy({ slug });
+        const jobExist = await this.jobRepository.findOneBy({ slug });
         if (jobExist) {
           isNewJobs = false;
           break;
@@ -154,11 +153,27 @@ export class JobService {
 
         await newPage.close();
       }
-
-      await page.click('a[rel="next"]');
-      await page.waitForSelector('.job', { visible: true });
+      if (isNewJobs) {
+        await page.click('a[rel="next"]');
+        await page.waitForSelector('.job', { visible: true });
+      }
     }
     console.log('crawl done::::');
     return 'success';
+  }
+  async findAll(): Promise<Job[]> {
+    return await this.jobRepository.find();
+  }
+  async findByCondition(condition: any): Promise<Job[]> {
+    return await this.jobRepository.find(condition);
+  }
+  async findOneById(id: number): Promise<Job> {
+    return await this.jobRepository.findOneBy({ id });
+  }
+  async findOneByCondition(condition: any): Promise<Job> {
+    return await this.jobRepository.findOneBy(condition);
+  }
+  async remove(id: number): Promise<DeleteResult> {
+    return await this.jobRepository.delete(id);
   }
 }
