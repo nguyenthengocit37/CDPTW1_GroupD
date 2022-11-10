@@ -8,7 +8,6 @@ import { DeleteResult, Repository } from 'typeorm';
 import { WorkType } from '@root/entity/WorkType';
 import { JobTitle } from '@root/entity/JobTitle';
 import { Skill } from '@root/entity/Skill';
-import { City } from '@root/entity/City';
 import { Job } from '@root/entity/Job';
 import { Company } from '@root/entity/Company';
 import { CompanyDto } from './dto/company.dto';
@@ -65,9 +64,9 @@ export class JobService {
         const job: JobCrawl = await newPage.evaluate(() => {
           const title = document.querySelector('.job-details__title')?.textContent.trim();
           const description = document.querySelector('.job-details__paragraph').innerHTML;
-          const workTypes = Array.from(
-            document.querySelectorAll('.svg-icon__box[data-bs-original-title] div.svg-icon__text span'),
-          ).map((skill) => skill?.textContent.trim());
+          const workType = document
+            .querySelector('.svg-icon__box[data-bs-original-title] div.svg-icon__text span')
+            ?.textContent.trim();
           const skills: string[] = Array.from(
             document.querySelectorAll('.job-details .job-details__tag-list>a>span'),
           ).map((skill) => skill?.textContent.trim());
@@ -89,7 +88,7 @@ export class JobService {
           return {
             title,
             description,
-            workTypes,
+            workType,
             skills,
             city,
             company,
@@ -111,15 +110,10 @@ export class JobService {
           });
         }
 
-        const workTypes: WorkType[] = await Promise.all(
-          job.workTypes.map(async (workType) => {
-            let workTypeExist = await this.workTypeRepository.findOneBy({ name: workType });
-            if (!workTypeExist) {
-              workTypeExist = this.workTypeRepository.create({ name: workType });
-            }
-            return workTypeExist;
-          }),
-        );
+        let workTypeExist = await this.workTypeRepository.findOneBy({ name: job.workType });
+        if (!workTypeExist) {
+          workTypeExist = this.workTypeRepository.create({ name: job.workType });
+        }
         const skills: Skill[] = await Promise.all(
           job.skills.map(async (skill) => {
             let skillExist = await this.skillRepository.findOneBy({ name: skill });
@@ -143,9 +137,9 @@ export class JobService {
         const newJob = this.jobRepository.create({
           jobTitle,
           description: job.description,
-          workType: workTypes,
+          workType: workTypeExist,
           company: companyExist,
-          skill: skills,
+          skills: skills,
           slug,
         });
         await this.jobRepository.save(newJob);

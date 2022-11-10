@@ -4,8 +4,8 @@ export class JobCrawl {
   title: string;
   description: string;
   salary?: number;
-  workTypes: Array<string>;
+  workType: string;
   company: CompanyDto;
-  skills?: Array<string>;
+  skills: Array<string>;
   city: string;
 }
