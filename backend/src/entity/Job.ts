@@ -1,14 +1,5 @@
 import { AbstractEntity } from '@common/abstract.entity';
-import {
-  Entity,
-  Column,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  OneToOne,
-  JoinColumn,
-  OneToMany,
-} from 'typeorm';
+import { Entity, Column, JoinTable, ManyToMany, ManyToOne, OneToOne, JoinColumn, OneToMany } from 'typeorm';
 import { JobTitle } from './JobTitle';
 import { WorkType } from './WorkType';
 import { Company } from './Company';
@@ -16,18 +7,24 @@ import { Skill } from './Skill';
 
 @Entity()
 export class Job extends AbstractEntity {
-  @OneToOne(() => JobTitle)
+  @OneToOne(() => JobTitle, { cascade: true })
   @JoinColumn()
   jobTitle: JobTitle;
-  @Column()
+  @Column({ type: 'longtext' })
   description: string;
-  @Column()
-  salary: number;
-  @OneToMany(() => WorkType, (workType) => workType.job)
+  @Column({ default: 0 })
+  salary?: number = 0;
+  @OneToMany(() => WorkType, (workType) => workType.job, {
+    cascade: true,
+  })
   workType: WorkType[];
-  @ManyToOne(() => Company, (company) => company.id)
+  @ManyToOne(() => Company, (company) => company.id, {
+    cascade: true,
+  })
   company: Company;
-  @ManyToMany(() => Skill)
+  @ManyToMany(() => Skill, { cascade: true })
   @JoinTable()
   skill: Skill[];
+  @Column({ unique: true })
+  slug: string;
 }

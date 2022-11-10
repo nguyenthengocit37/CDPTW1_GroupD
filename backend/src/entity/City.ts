@@ -3,6 +3,6 @@ import { Entity, Column } from 'typeorm';
 
 @Entity()
 export class City extends AbstractEntity {
-  @Column()
+  @Column({ unique: true })
   name: string;
 }

@@ -4,7 +4,7 @@ import { Job } from './Job';
 
 @Entity()
 export class WorkType extends AbstractEntity {
-  @Column()
+  @Column({ unique: true })
   name: string;
   @ManyToOne(() => Job, (job) => job.workType)
   job: Job;

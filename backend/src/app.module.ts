@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostModule } from './modules/post/post.module';
 import { JobModule } from './modules/job/job.module';
+import { CityModule } from './modules/city/city.module';
 
 @Module({
   imports: [
@@ -15,11 +16,12 @@ import { JobModule } from './modules/job/job.module';
       password: process.env.DB_PASSWORD || 'admin',
       database: process.env.DB_NAME || 'cdptw1_groupd',
       entities: ['entity/*{.ts,.js}'],
-      synchronize: process.env.ENV === 'DEV',
+      synchronize: true,
       autoLoadEntities: true,
     }),
     PostModule,
     JobModule,
+    CityModule,
   ],
   controllers: [AppController],
   providers: [AppService],

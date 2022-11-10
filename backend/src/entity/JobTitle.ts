@@ -3,9 +3,9 @@ import { Entity, Column } from 'typeorm';
 
 @Entity()
 export class JobTitle extends AbstractEntity {
-  @Column()
+  @Column({ type: 'longtext' })
   title: string;
 
-  @Column()
-  subTitle?: string;
+  @Column({ default: '' })
+  subTitle?: string = '';
 }

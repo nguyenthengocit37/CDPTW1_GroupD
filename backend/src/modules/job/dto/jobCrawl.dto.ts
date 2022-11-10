@@ -1,11 +1,11 @@
-import { Company } from './company.dto';
+import { CompanyDto } from './company.dto';
 
 export class JobCrawl {
   title: string;
   description: string;
   salary?: number;
   workTypes: Array<string>;
-  company: Company;
+  company: CompanyDto;
   skills?: Array<string>;
   city: string;
 }

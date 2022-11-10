@@ -4,11 +4,13 @@ import { City } from './City';
 
 @Entity()
 export class Company extends AbstractEntity {
-  @Column()
+  @Column({ unique: true })
   name: string;
-  @Column()
+  @Column({ type: 'longtext' })
   description: string;
-  @ManyToMany(() => City)
+  @Column({ type: 'longtext' })
+  imageUrl: string;
+  @ManyToMany(() => City, { cascade: ['insert', 'remove'] })
   @JoinTable()
   city: City[];
 }
