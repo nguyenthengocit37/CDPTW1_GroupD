@@ -95,6 +95,15 @@ export class JobService {
           };
         });
 
+        const slug = slugify(`${job.company.name}${job.title}`, {
+          lower: true,
+        });
+        const jobExist = await this.jobRepository.findOneBy({ slug });
+        if (jobExist) {
+          isNewJobs = false;
+          break;
+        }
+
         let companyExist = await this.companyRepository.findOneBy({ name: job.company.name });
 
         if (!companyExist) {
@@ -126,14 +135,6 @@ export class JobService {
 
         const jobTitle = this.jobTitleRepository.create({ title: job.title });
 
-        const slug = slugify(`${job.company.name}${job.title}`, {
-          lower: true,
-        });
-        const jobExist = await this.jobRepository.findOneBy({ slug });
-        if (jobExist) {
-          isNewJobs = false;
-          break;
-        }
         const newJob = this.jobRepository.create({
           jobTitle,
           description: job.description,
