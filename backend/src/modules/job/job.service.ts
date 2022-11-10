@@ -15,10 +15,10 @@ export class JobService {
     const page = await browser.newPage();
     await page.goto(`${URL}/it-jobs`);
     while (await page.$('.search-page__jobs-pagination a[rel="next"]')) {
-      const jobUrls = await page.evaluate(() => {
+      const jobUrls: string[] = await page.evaluate(() => {
         return Array.from(
           document.querySelectorAll('.job .job__description .title a'),
-        ).map((job) => job.getAttribute('href'));
+        ).map((job: Element) => job.getAttribute('href'));
       });
       // crawl from job detail page
       for (const jobUrl of jobUrls) {
@@ -26,7 +26,7 @@ export class JobService {
         await newPage.goto(`${DOMAIN_URL}${jobUrl}`, {
           waitUntil: 'networkidle0',
         });
-        const jobDescription = await newPage.evaluate(
+        const jobDescription: string = await newPage.evaluate(
           () => document.querySelector('.job-details__title')?.textContent,
         );
         console.log('description:', jobDescription);
