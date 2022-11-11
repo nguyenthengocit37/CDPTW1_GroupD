@@ -1,9 +1,11 @@
 import React from 'react';
-import { Button, Form, Input, Select } from 'antd';
-import { SearchOutlined, UserOutlined } from '@ant-design/icons';
+import { Button, Form, Input, Select, Space, Spin } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 
 import { Container, ContentWrapper, SearchWrapper } from './homepage.style';
 import JobComponent from '../../components/Job/Job';
+import { useQuery } from '@tanstack/react-query';
+import { getJobs } from '../../services/api/job/jobApi';
 
 const { Option } = Select;
 
@@ -23,6 +25,14 @@ export default function HomePage() {
     }
   };
 
+  const {
+    isLoading,
+    data: jobs,
+    error,
+  } = useQuery(['jobs'], () => {
+    return getJobs();
+  });
+
   return (
     <Container>
       <SearchWrapper>
@@ -30,9 +40,12 @@ export default function HomePage() {
           form={form}
           name="horizontal_login"
           layout="inline"
-          style={{ justifyContent: 'center', marginTop: '2rem' }}
+          style={{
+            justifyContent: 'center',
+            marginTop: '2rem',
+          }}
         >
-          <Form.Item name="job">
+          <Form.Item name="job" style={{ width: '40%' }}>
             <Input
               prefix={<SearchOutlined className="site-form-item-icon" />}
               placeholder="Keyword job..."
@@ -45,8 +58,9 @@ export default function HomePage() {
               onChange={onCityChange}
               style={{ width: 150 }}
               size="large"
-              allowClear
+              defaultValue="all"
             >
+              <Option value="all">All cities</Option>
               <Option value="hochiminh">Ho Chi Minh</Option>
               <Option value="Da Nang">Da Nang</Option>
               <Option value="Ha Noi">Ha Noi</Option>
@@ -62,7 +76,19 @@ export default function HomePage() {
         </Form>
       </SearchWrapper>
       <ContentWrapper>
-        <JobComponent title="hehehe" city="Ho chi minh" skills={['he', 'hi']} />
+        {(jobs &&
+          jobs.data.map(() => (
+            <JobComponent
+              title="hehehe"
+              city="Ho chi minh"
+              skills={['he', 'hi']}
+              description="Thiết kế, xây dựng và phát triển các ứng dụng, phần mềm theo yêu cầu của khách hàng doanh nghiệp, nhà máy."
+            />
+          ))) || (
+          <Space size="middle">
+            <Spin size="large" />
+          </Space>
+        )}
       </ContentWrapper>
     </Container>
   );

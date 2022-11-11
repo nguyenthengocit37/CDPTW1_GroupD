@@ -8,20 +8,15 @@ const { Content } = Layout;
 
 function MainLayout() {
   return (
-    <>
-      <Layout>
-        <Header />
-        <Content>
-          <div className="contarner">
-            <Outlet />
-          </div>
-        </Content>
-        <Footer />
-      </Layout>
-      {/* <Header />
-
-      <Footer /> */}
-    </>
+    <Layout>
+      <Header />
+      <Content>
+        <div className="contarner">
+          <Outlet />
+        </div>
+      </Content>
+      <Footer />
+    </Layout>
   );
 }
 
