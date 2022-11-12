@@ -1,4 +1,5 @@
-import { Controller, Delete, Get, Param } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Query } from '@nestjs/common';
+import { Job } from '@root/entity/Job';
 import { JobService } from './job.service';
 
 @Controller('job')
@@ -6,8 +7,8 @@ export class JobController {
   constructor(private readonly jobService: JobService) {}
 
   @Get()
-  job() {
-    return this.jobService.findAll();
+  job(@Query() query): Promise<Job[]> {
+    return this.jobService.findAll(query);
   }
   @Get('crawl')
   crawl() {
