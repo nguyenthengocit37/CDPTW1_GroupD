@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button, Form, Input, Select, Spin, Empty } from 'antd';
+import React, { useState } from 'react';
+import { Button, Form, Input, Select, Spin, Empty, Pagination, PaginationProps } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
 import { Container, ContentWrapper, SearchWrapper } from './homepage.style';
@@ -11,23 +11,22 @@ import { Job } from '../../types/Job';
 const { Option } = Select;
 
 export default function HomePage() {
+  const [page, setPage] = useState(1);
   const [form] = Form.useForm();
-  const onCityChange = (value: string) => {
-    switch (value) {
-      case 'male':
-        form.setFieldsValue({ note: 'Hi, man!' });
-        return;
-      case 'female':
-        form.setFieldsValue({ note: 'Hi, lady!' });
-        return;
-      case 'other':
-        form.setFieldsValue({ note: 'Hi there!' });
-    }
-  };
+  const onCityChange = (value: string) => {};
 
-  const { isLoading, data: jobs } = useQuery(['jobs'], () => {
-    return getJobs();
-  });
+  const { isLoading, data: jobs } = useQuery(
+    ['jobs', page],
+    () => {
+      return getJobs({ page });
+    },
+    {
+      keepPreviousData: true,
+    }
+  );
+  const onPageChange: PaginationProps['onChange'] = (page) => {
+    setPage(page);
+  };
 
   return (
     <Container>
@@ -90,6 +89,11 @@ export default function HomePage() {
         ) : (
           <div style={{ textAlign: 'center' }}>
             <Spin size="large" />
+          </div>
+        )}
+        {!isLoading && jobs && jobs.length > 0 && (
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <Pagination defaultCurrent={page} onChange={onPageChange} total={jobs.length} />
           </div>
         )}
       </ContentWrapper>

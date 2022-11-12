@@ -41,7 +41,7 @@ function Job({ image = '', title, cities, createdDate, description, skills }: Pr
           {skills &&
             skills.length > 0 &&
             skills.map((skill) => (
-              <SkillStyled>
+              <SkillStyled key={skill.name}>
                 <span>{skill.name}</span>
               </SkillStyled>
             ))}
