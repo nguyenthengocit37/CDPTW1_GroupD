@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PostModule } from './modules/post/post.module';
 import { JobModule } from './modules/job/job.module';
 import { CityModule } from './modules/city/city.module';
 
@@ -19,7 +18,6 @@ import { CityModule } from './modules/city/city.module';
       synchronize: true,
       autoLoadEntities: true,
     }),
-    PostModule,
     JobModule,
     CityModule,
   ],
