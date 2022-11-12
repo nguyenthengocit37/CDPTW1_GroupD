@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ERROR_IMAGE } from '../../common/enum';
-import { getShortDescription } from '../../common/helper';
+import { getShortDescription, trimString } from '../../common/helper';
 import { City } from '../../types/City';
 import { Job } from '../../types/Job';
 import { Skill } from '../../types/Skill';
@@ -36,7 +36,9 @@ function JobComponent({ data: job }: props) {
         />
       </ImageCompanyWrapper>
       <JobDetailWrapper>
-        <JobTitle onClick={() => navigate(`/job/${job.slug}`)}>{job.jobTitle.title}</JobTitle>
+        <JobTitle onClick={() => navigate(`/job/${job.slug}`)}>
+          {trimString(job.jobTitle.title, 50)}
+        </JobTitle>
         <JobDescription>
           {getShortDescription(job.description, '.job-details__paragraph')}
         </JobDescription>
