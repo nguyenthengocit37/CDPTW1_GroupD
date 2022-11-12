@@ -73,16 +73,7 @@ export default function HomePage() {
       <ContentWrapper>
         {!isLoading ? (
           jobs && jobs.length > 0 ? (
-            jobs.map((job: Job) => (
-              <JobComponent
-                image={job.company.imageUrl}
-                title={job.jobTitle.title}
-                key={job.slug}
-                cities={job.company.city}
-                description={job.description}
-                skills={job.skills}
-              />
-            ))
+            jobs.map((job: Job) => <JobComponent data={job} />)
           ) : (
             <Empty />
           )
