@@ -12,6 +12,7 @@ import { Job } from '@root/entity/Job';
 import { Company } from '@root/entity/Company';
 import { CompanyDto } from './dto/company.dto';
 import { CityService } from '../city/city.service';
+import { City } from '@root/entity/City';
 
 @Injectable()
 export class JobService {
@@ -40,12 +41,13 @@ export class JobService {
     });
     const page = await browser.newPage();
     await page.goto(`${DOMAIN_URL}/it-jobs`);
-    let isNewJobs = true;
-    while ((await page.$('.search-page__jobs-pagination a[rel="next"]')) && isNewJobs) {
+
+    let numberOfJobs = 0;
+    const nextButtonSelector = '.search-page__jobs-pagination a[rel="next"]';
+    while (await page.$(nextButtonSelector)) {
       const jobUrls: string[] = await page.evaluate(() => {
-        return Array.from(document.querySelectorAll('.job .job__description .title a')).map((job: Element) =>
-          job.getAttribute('href'),
-        );
+        const jobUrlSelector = '.job .job__description .title a';
+        return Array.from(document.querySelectorAll(jobUrlSelector)).map((job: Element) => job.getAttribute('href'));
       });
 
       // crawl from job detail page
@@ -54,37 +56,47 @@ export class JobService {
         await newPage.goto(`${DOMAIN_URL}${jobUrl}`, {
           waitUntil: 'networkidle0',
         });
-
+        const imageSelector = '.jd-page__employer-overview .employer-long-overview__logo img';
         // wait for image to be loaded
-        await newPage.waitForSelector('.jd-page__employer-overview .employer-long-overview__logo img', {
+        await newPage.waitForSelector(imageSelector, {
           visible: true,
           timeout: 5000, //5 second
         });
 
         const job: JobCrawl = await newPage.evaluate(() => {
-          const title = document.querySelector('.job-details__title')?.textContent.trim();
-          const description = document.querySelector('.job-details__paragraph').innerHTML;
-          const workType = document
-            .querySelector('.svg-icon__box[data-bs-original-title] div.svg-icon__text span')
-            ?.textContent.trim();
-          const skills: string[] = Array.from(
-            document.querySelectorAll('.job-details .job-details__tag-list>a>span'),
-          ).map((skill) => skill?.textContent.trim());
-          const cityCrawl = document
-            .querySelector('.job-details__overview .svg-icon .svg-icon__text span')
-            ?.textContent.trim();
+          const titleSelector = '.job-details__title';
+          const descriptionSelector = '.job-details';
+          const workTypeSelector = '.svg-icon__box[data-bs-original-title] div.svg-icon__text span';
+          const skillSelector = '.job-details .job-details__tag-list>a>span';
+          const citySelector = '.job-details__overview .svg-icon .svg-icon__text span';
+          const nameCompanySelector = '.jd-page__employer-overview .employer-long-overview__name>a';
+          const descriptionCompanySelector = '.jd-page__employer-overview .employer-long-overview__short-desc';
+          const imageUrlCompanySelector = '.jd-page__employer-overview .employer-long-overview__logo img';
+
+          const title = document.querySelector(titleSelector)?.textContent.trim();
+
+          const workType = document.querySelector(workTypeSelector)?.textContent.trim();
+          const skills: string[] = Array.from(document.querySelectorAll(skillSelector)).map((skill) =>
+            skill?.textContent.trim(),
+          );
+          const cityCrawl = document.querySelector(citySelector)?.textContent.trim();
           const city = cityCrawl.split(',').pop(); //get city name
           const company: CompanyDto = {
-            name: document
-              .querySelector('.jd-page__employer-overview .employer-long-overview__name>a')
-              ?.textContent.trim(),
-            description: document
-              .querySelector('.jd-page__employer-overview .employer-long-overview__short-desc')
-              ?.textContent.trim(),
-            imageUrl: document
-              .querySelector('.jd-page__employer-overview .employer-long-overview__logo img')
-              .getAttribute('src'),
+            name: document.querySelector(nameCompanySelector)?.textContent.trim(),
+            description: document.querySelector(descriptionCompanySelector)?.textContent.trim(),
+            imageUrl: document.querySelector(imageUrlCompanySelector).getAttribute('src'),
           };
+
+          const getDescription = () => {
+            const descriptionElement = document.querySelector(descriptionSelector);
+            //remove unnecessary elements in description
+            descriptionElement.removeChild(descriptionElement.querySelector('.job-details__header'));
+            descriptionElement.removeChild(descriptionElement.querySelector('.job-details__overview'));
+            descriptionElement.removeChild(descriptionElement.querySelector('.job-details__divider'));
+            return descriptionElement.innerHTML;
+          };
+          const description = getDescription();
+
           return {
             title,
             description,
@@ -94,20 +106,19 @@ export class JobService {
             company,
           };
         });
-
         const slug = slugify(`${job.company.name}${job.title}`, {
           lower: true,
         });
-        const jobExist = await this.jobRepository.findOneBy({ slug });
+        const jobExist: Job = await this.jobRepository.findOneBy({ slug });
         if (jobExist) {
-          isNewJobs = false;
-          break;
+          newPage.close();
+          console.log('job exist:::', jobExist.jobTitle.title);
+          continue;
         }
 
-        let companyExist = await this.companyRepository.findOneBy({ name: job.company.name });
-
+        let companyExist: Company = await this.companyRepository.findOneBy({ name: job.company.name });
         if (!companyExist) {
-          let cityExist = await this.cityService.findOneByCondition({ name: job.city });
+          let cityExist: City = await this.cityService.findOneByCondition({ name: job.city });
           if (!cityExist) {
             cityExist = await this.cityService.create({ name: job.city });
           }
@@ -119,7 +130,7 @@ export class JobService {
           });
         }
 
-        let workTypeExist = await this.workTypeRepository.findOneBy({ name: job.workType });
+        let workTypeExist: WorkType = await this.workTypeRepository.findOneBy({ name: job.workType });
         if (!workTypeExist) {
           workTypeExist = this.workTypeRepository.create({ name: job.workType });
         }
@@ -133,26 +144,24 @@ export class JobService {
           }),
         );
 
-        const jobTitle = this.jobTitleRepository.create({ title: job.title });
+        const jobTitle: JobTitle = this.jobTitleRepository.create({ title: job.title });
 
-        const newJob = this.jobRepository.create({
+        const newJob: Job = this.jobRepository.create({
           jobTitle,
           description: job.description,
           workType: workTypeExist,
           company: companyExist,
-          skills: skills,
+          skills,
           slug,
         });
         await this.jobRepository.save(newJob);
-        console.log('done::::');
-
+        console.log(`done:::(${++numberOfJobs})`, newJob.jobTitle.title);
         await newPage.close();
       }
-      if (isNewJobs) {
-        await page.click('a[rel="next"]');
-        await page.waitForSelector('.job', { visible: true });
-      }
+      await page.click('a[rel="next"]');
+      await page.waitForSelector('.job', { visible: true });
     }
+    numberOfJobs = 0;
     console.log('crawl done::::');
     return 'success';
   }
