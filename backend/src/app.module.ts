@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { JobModule } from './modules/job/job.module';
 import { CityModule } from './modules/city/city.module';
 
@@ -18,6 +20,7 @@ import { CityModule } from './modules/city/city.module';
       synchronize: true,
       autoLoadEntities: true,
     }),
+    ScheduleModule.forRoot(),
     JobModule,
     CityModule,
   ],

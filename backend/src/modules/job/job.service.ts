@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import * as puppeteer from 'puppeteer';
 import slugify from 'slugify';
-
-import { JobCrawl } from './dto/jobCrawl.dto';
+import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
+
+import { JobCrawl } from './dto/jobCrawl.dto';
 import { WorkType } from '@root/entity/WorkType';
 import { JobTitle } from '@root/entity/JobTitle';
 import { Skill } from '@root/entity/Skill';
@@ -32,6 +33,18 @@ export class JobService {
   sayHello() {
     return 'hello';
   }
+  /**
+   *  @Cron config
+   *    * * * * * *
+   *    | | | | | |
+   *   | | | | | day of week
+   *   | | | | months
+   *   | | | day of month
+   *   | | hours
+   *   | minutes
+   *   seconds (optional)
+   */
+  @Cron('23 23 23 * * *') // It will be running when 23h:23m:23s once time
   async crawlDataViaPuppeteer() {
     const DOMAIN_URL = 'https://itviec.com';
     const browser = await puppeteer.launch({
