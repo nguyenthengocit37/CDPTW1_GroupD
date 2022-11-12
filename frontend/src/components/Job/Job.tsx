@@ -1,7 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ERROR_IMAGE } from '../../common/enum';
 import { getShortDescription } from '../../common/helper';
 import { City } from '../../types/City';
+import { Job } from '../../types/Job';
 import { Skill } from '../../types/Skill';
 import {
   CompanyImage,
@@ -17,30 +19,31 @@ import {
   ImageCompanyWrapper,
 } from './job.style';
 
-type Props = {
-  image?: string;
-  title: string;
-  cities: City[];
-  description: string;
-  createdDate?: Date;
-  skills: Skill[];
-};
+interface props {
+  data: Job;
+}
 
-function Job({ image = '', title, cities, createdDate, description, skills }: Props) {
+function JobComponent({ data: job }: props) {
+  const navigate = useNavigate();
   return (
-    <JobWrapper className="job">
+    <JobWrapper className="job" onClick={() => navigate(`/job/${job.slug}`)}>
       <ImageCompanyWrapper>
-        <CompanyImage src={image || 'error'} fallback={ERROR_IMAGE} height={120} width={120} />
+        <CompanyImage
+          src={job.company.imageUrl || 'error'}
+          fallback={ERROR_IMAGE}
+          height={120}
+          width={120}
+        />
       </ImageCompanyWrapper>
       <JobDetailWrapper>
-        <JobTitle>{title}</JobTitle>
+        <JobTitle onClick={() => navigate(`/job/${job.slug}`)}>{job.jobTitle.title}</JobTitle>
         <JobDescription>
-          {getShortDescription(description, '.job-details__paragraph')}
+          {getShortDescription(job.description, '.job-details__paragraph')}
         </JobDescription>
         <SkillWrapper>
-          {skills &&
-            skills.length > 0 &&
-            skills.map((skill) => (
+          {job.skills &&
+            job.skills.length > 0 &&
+            job.skills.map((skill) => (
               <SkillStyled key={skill.name}>
                 <span>{skill.name}</span>
               </SkillStyled>
@@ -48,13 +51,15 @@ function Job({ image = '', title, cities, createdDate, description, skills }: Pr
         </SkillWrapper>
       </JobDetailWrapper>
       <MoreInfoWrapper>
-        {cities &&
-          cities.length > 0 &&
-          cities.map((city) => <CityStyled key={city.name}>{city.name}</CityStyled>)}
-        <DistanceTimeCreatedStyled>{createdDate?.toString() || `10 m`}</DistanceTimeCreatedStyled>
+        {job.company.city &&
+          job.company.city.length > 0 &&
+          job.company.city.map((city) => <CityStyled key={city.name}>{city.name}</CityStyled>)}
+        <DistanceTimeCreatedStyled>
+          {job.createdDate?.toString() || `10 m`}
+        </DistanceTimeCreatedStyled>
       </MoreInfoWrapper>
     </JobWrapper>
   );
 }
 
-export default Job;
+export default JobComponent;
