@@ -20,7 +20,7 @@ export class PostService {
     return this.postReponsitory.find();
   }
 
-  async findOne(id: string): Promise<Post> {
+  async findOne(id: number): Promise<Post> {
     try {
       const post = await this.postReponsitory.findOneBy({ id });
       if (!post) {
@@ -32,7 +32,7 @@ export class PostService {
     }
   }
 
-  async update(id: string, postDto: UpdatePostDto) {
+  async update(id: number, postDto: UpdatePostDto) {
     try {
       await this.postReponsitory.update(id, postDto);
       const updatedTodo = await this.postReponsitory.findOneBy({ id });
@@ -45,7 +45,7 @@ export class PostService {
     }
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     try {
       const deletedPost = await this.postReponsitory.delete(id);
       if (!deletedPost.affected) {
