@@ -15,9 +15,9 @@ export class JobController {
     return this.jobService.crawlDataViaPuppeteer();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.jobService.findOneById(+id);
+  @Get(':slug')
+  findOne(@Param('slug') slug: string) {
+    return this.jobService.findOneBySlug(slug);
   }
 
   @Delete(':id')

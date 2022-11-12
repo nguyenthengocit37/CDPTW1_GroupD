@@ -178,8 +178,8 @@ export class JobService {
   async findByCondition(condition: any): Promise<Job[]> {
     return await this.jobRepository.find(condition);
   }
-  async findOneById(id: number): Promise<Job> {
-    return await this.jobRepository.findOneBy({ id });
+  async findOneBySlug(slug: string): Promise<Job> {
+    return await this.jobRepository.findOneBy({ slug });
   }
   async findOneByCondition(condition: any): Promise<Job> {
     return await this.jobRepository.findOneBy(condition);
