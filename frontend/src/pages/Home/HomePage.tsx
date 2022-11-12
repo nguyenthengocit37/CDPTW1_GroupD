@@ -1,37 +1,32 @@
-import React from 'react';
-import { Button, Form, Input, Select, Space, Spin } from 'antd';
+import React, { useState } from 'react';
+import { Button, Form, Input, Select, Spin, Empty, Pagination, PaginationProps } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
 import { Container, ContentWrapper, SearchWrapper } from './homepage.style';
 import JobComponent from '../../components/Job/Job';
 import { useQuery } from '@tanstack/react-query';
 import { getJobs } from '../../services/api/job/jobApi';
+import { Job } from '../../types/Job';
 
 const { Option } = Select;
 
 export default function HomePage() {
+  const [page, setPage] = useState(1);
   const [form] = Form.useForm();
+  const onCityChange = (value: string) => {};
 
-  const onCityChange = (value: string) => {
-    switch (value) {
-      case 'male':
-        form.setFieldsValue({ note: 'Hi, man!' });
-        return;
-      case 'female':
-        form.setFieldsValue({ note: 'Hi, lady!' });
-        return;
-      case 'other':
-        form.setFieldsValue({ note: 'Hi there!' });
+  const { isLoading, data: jobs } = useQuery(
+    ['jobs', page],
+    () => {
+      return getJobs({ page });
+    },
+    {
+      keepPreviousData: true,
     }
+  );
+  const onPageChange: PaginationProps['onChange'] = (page) => {
+    setPage(page);
   };
-
-  const {
-    isLoading,
-    data: jobs,
-    error,
-  } = useQuery(['jobs'], () => {
-    return getJobs();
-  });
 
   return (
     <Container>
@@ -76,18 +71,30 @@ export default function HomePage() {
         </Form>
       </SearchWrapper>
       <ContentWrapper>
-        {(jobs &&
-          jobs.data.map(() => (
-            <JobComponent
-              title="hehehe"
-              city="Ho chi minh"
-              skills={['he', 'hi']}
-              description="Thiết kế, xây dựng và phát triển các ứng dụng, phần mềm theo yêu cầu của khách hàng doanh nghiệp, nhà máy."
-            />
-          ))) || (
-          <Space size="middle">
+        {!isLoading ? (
+          jobs && jobs.length > 0 ? (
+            jobs.map((job: Job) => (
+              <JobComponent
+                image={job.company.imageUrl}
+                title={job.jobTitle.title}
+                key={job.slug}
+                cities={job.company.city}
+                description={job.description}
+                skills={job.skills}
+              />
+            ))
+          ) : (
+            <Empty />
+          )
+        ) : (
+          <div style={{ textAlign: 'center' }}>
             <Spin size="large" />
-          </Space>
+          </div>
+        )}
+        {!isLoading && jobs && jobs.length > 0 && (
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <Pagination defaultCurrent={page} onChange={onPageChange} total={jobs.length} />
+          </div>
         )}
       </ContentWrapper>
     </Container>

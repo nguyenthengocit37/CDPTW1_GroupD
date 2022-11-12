@@ -9,7 +9,7 @@ export const SearchWrapper = styled.div`
   margin: 5rem 0;
 `;
 export const ContentWrapper = styled.div`
-  width: 80%;
+  width: 60%;
   margin: 0 auto;
   min-height: 60vh;
 `;

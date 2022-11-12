@@ -1,15 +1,13 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 
 const axiosClient = axios.create({
-  baseURL: process.env.API_URL,
+  baseURL: process.env.REACT_APP_API_URL,
 });
 axiosClient.interceptors.request.use((config: AxiosRequestConfig) => {
   return config;
 });
 axiosClient.interceptors.response.use(
-  (response) => {
-    if (response && response.data) return response.data;
-  },
+  (response) => response,
   (error) => {
     throw error;
   }
