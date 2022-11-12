@@ -10,11 +10,15 @@ export const JobWrapper = styled.div`
     cursor: pointer;
     box-shadow: 0 0 6px 0 #c4c7cc;
   }
+  & + .job {
+    margin: 2rem 0;
+  }
 `;
 export const MoreInfoWrapper = styled.div`
   padding: 2rem;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 2rem;
 `;
 export const DistanceTimeCreatedStyled = styled.div`

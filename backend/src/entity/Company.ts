@@ -10,7 +10,7 @@ export class Company extends AbstractEntity {
   description: string;
   @Column({ type: 'longtext' })
   imageUrl: string;
-  @ManyToMany(() => City, { cascade: ['insert', 'remove'] })
+  @ManyToMany(() => City, { cascade: ['insert', 'remove'], eager: true })
   @JoinTable()
   city: City[];
 }

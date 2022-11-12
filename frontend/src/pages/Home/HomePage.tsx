@@ -1,17 +1,17 @@
 import React from 'react';
-import { Button, Form, Input, Select, Space, Spin } from 'antd';
+import { Button, Form, Input, Select, Spin, Empty } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
 import { Container, ContentWrapper, SearchWrapper } from './homepage.style';
 import JobComponent from '../../components/Job/Job';
 import { useQuery } from '@tanstack/react-query';
 import { getJobs } from '../../services/api/job/jobApi';
+import { Job } from '../../types/Job';
 
 const { Option } = Select;
 
 export default function HomePage() {
   const [form] = Form.useForm();
-
   const onCityChange = (value: string) => {
     switch (value) {
       case 'male':
@@ -25,11 +25,7 @@ export default function HomePage() {
     }
   };
 
-  const {
-    isLoading,
-    data: jobs,
-    error,
-  } = useQuery(['jobs'], () => {
+  const { isLoading, data: jobs } = useQuery(['jobs'], () => {
     return getJobs();
   });
 
@@ -76,18 +72,25 @@ export default function HomePage() {
         </Form>
       </SearchWrapper>
       <ContentWrapper>
-        {(jobs &&
-          jobs.data.map(() => (
-            <JobComponent
-              title="hehehe"
-              city="Ho chi minh"
-              skills={['he', 'hi']}
-              description="Thiết kế, xây dựng và phát triển các ứng dụng, phần mềm theo yêu cầu của khách hàng doanh nghiệp, nhà máy."
-            />
-          ))) || (
-          <Space size="middle">
+        {!isLoading ? (
+          jobs && jobs.length > 0 ? (
+            jobs.map((job: Job) => (
+              <JobComponent
+                image={job.company.imageUrl}
+                title={job.jobTitle.title}
+                key={job.slug}
+                cities={job.company.city}
+                description={job.description}
+                skills={job.skills}
+              />
+            ))
+          ) : (
+            <Empty />
+          )
+        ) : (
+          <div style={{ textAlign: 'center' }}>
             <Spin size="large" />
-          </Space>
+          </div>
         )}
       </ContentWrapper>
     </Container>
