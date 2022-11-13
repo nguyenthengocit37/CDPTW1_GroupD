@@ -7,7 +7,7 @@ export class JobController {
   constructor(private readonly jobService: JobService) {}
 
   @Get()
-  job(@Query() query): Promise<Job[]> {
+  job(@Query() query): Promise<{count:number;data:Job[]}> {
     return this.jobService.findAll(query);
   }
   @Get('crawl')

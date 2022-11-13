@@ -15,7 +15,7 @@ export default function HomePage() {
   const [form] = Form.useForm();
   const onCityChange = (value: string) => {};
 
-  const { isLoading, data: jobs } = useQuery(
+  const { isLoading, data } = useQuery(
     ['jobs', page],
     () => {
       return getJobs({ page });
@@ -24,6 +24,7 @@ export default function HomePage() {
       keepPreviousData: true,
     }
   );
+  console.log(data);
   const onPageChange: PaginationProps['onChange'] = (page) => {
     setPage(page);
   };
@@ -72,8 +73,8 @@ export default function HomePage() {
       </SearchWrapper>
       <ContentWrapper>
         {!isLoading ? (
-          jobs && jobs.length > 0 ? (
-            jobs.map((job: Job) => <JobComponent data={job} />)
+          data?.data && data?.data.length > 0 ? (
+            data?.data.map((job: Job) => <JobComponent data={job} />)
           ) : (
             <Empty />
           )
@@ -82,9 +83,9 @@ export default function HomePage() {
             <Spin size="large" />
           </div>
         )}
-        {!isLoading && jobs && jobs.length > 0 && (
+        {!isLoading && data?.count && (
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <Pagination defaultCurrent={page} onChange={onPageChange} total={jobs.length} />
+            <Pagination defaultCurrent={page} onChange={onPageChange} pageSize={20} showSizeChanger={false} total={data?.count} />
           </div>
         )}
       </ContentWrapper>

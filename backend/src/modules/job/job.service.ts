@@ -178,15 +178,16 @@ export class JobService {
     console.log('crawl done::::');
     return 'success';
   }
-  async findAll(query: { take: number; page: number }): Promise<Job[]> {
+  async findAll(query: { take: number; page: number }): Promise<{count:number;data:Job[]}> {
     const take = query.take || 20;
     const page = query.page || 1;
     const skip = (page - 1) * take;
-    return await this.jobRepository.find({
+    const [data,count] = await this.jobRepository.findAndCount({
       order: { createdDate: 'DESC' },
       take,
       skip,
     });
+    return {count,data}
   }
   async findByCondition(condition: any): Promise<Job[]> {
     return await this.jobRepository.find(condition);
