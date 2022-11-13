@@ -74,7 +74,7 @@ export default function HomePage() {
       <ContentWrapper>
         {!isLoading ? (
           data?.data && data?.data.length > 0 ? (
-            data?.data.map((job: Job) => <JobComponent data={job} />)
+            data?.data.map((job: Job) => <JobComponent key={job.id} data={job} />)
           ) : (
             <Empty />
           )
