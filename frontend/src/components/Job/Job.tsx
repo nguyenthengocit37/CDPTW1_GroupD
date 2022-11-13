@@ -37,7 +37,7 @@ function JobComponent({ data: job }: props) {
       </ImageCompanyWrapper>
       <JobDetailWrapper>
         <JobTitle onClick={() => navigate(`/job/${job.slug}`)}>
-          {trimString(job.jobTitle.title, 50)}
+          {trimString(job.jobTitle.title, 30)}
         </JobTitle>
         <JobDescription>
           {getShortDescription(job.description, '.job-details__paragraph')}
@@ -57,7 +57,7 @@ function JobComponent({ data: job }: props) {
           job.company.city.length > 0 &&
           job.company.city.map((city) => <CityStyled key={city.name}>{city.name}</CityStyled>)}
         <DistanceTimeCreatedStyled>
-          {job.createdDate?.toString() || `10 m`}
+          {`1 m`}
         </DistanceTimeCreatedStyled>
       </MoreInfoWrapper>
     </JobWrapper>

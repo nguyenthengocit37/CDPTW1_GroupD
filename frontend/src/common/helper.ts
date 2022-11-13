@@ -3,7 +3,7 @@ export const trimString = (str: string, maxLength: number): string => {
   return `${str.substring(0, maxLength)}...`;
 };
 export const getShortDescription = (html: string, selector: string) => {
-  const MAX_LENGTH = 100;
+  const MAX_LENGTH = 80;
   const shortDescElement = document.createElement('div');
 
   shortDescElement.innerHTML = html;
