@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { JobModule } from './modules/job/job.module';
 import { CityModule } from './modules/city/city.module';
+import { SkillModule } from './modules/skill/skill.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CityModule } from './modules/city/city.module';
     ScheduleModule.forRoot(),
     JobModule,
     CityModule,
+    SkillModule,
   ],
   controllers: [AppController],
   providers: [AppService],

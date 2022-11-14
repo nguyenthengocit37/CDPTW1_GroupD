@@ -3,7 +3,7 @@ import * as puppeteer from 'puppeteer';
 import slugify from 'slugify';
 import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult, ILike, Repository } from 'typeorm';
 
 import { JobCrawl } from './dto/jobCrawl.dto';
 import { WorkType } from '@root/entity/WorkType';
@@ -93,7 +93,7 @@ export class JobService {
             skill?.textContent.trim(),
           );
           const cityCrawl = document.querySelector(citySelector)?.textContent.trim();
-          const city = cityCrawl.split(',').pop(); //get city name
+          const city = cityCrawl.split(',').pop().trim(); //get city name
           const company: CompanyDto = {
             name: document.querySelector(nameCompanySelector)?.textContent.trim(),
             description: document.querySelector(descriptionCompanySelector)?.textContent.trim(),
@@ -178,16 +178,30 @@ export class JobService {
     console.log('crawl done::::');
     return 'success';
   }
-  async findAll(query: { take: number; page: number }): Promise<{count:number;data:Job[]}> {
-    const take = query.take || 20;
-    const page = query.page || 1;
+  async findAll(query: {
+    keyword: string;
+    take: number;
+    page: number;
+    city: string;
+  }): Promise<{ count: number; data: Job[] }> {
+    const { take = 20, page = 1, keyword, city } = query;
     const skip = (page - 1) * take;
-    const [data,count] = await this.jobRepository.findAndCount({
+    const [data, count] = await this.jobRepository.findAndCount({
+      where: {
+        jobTitle: {
+          ...(keyword && { title: ILike(`%${keyword}%`) }),
+        },
+        company: {
+          city: {
+            ...(city && { name: city }),
+          },
+        },
+      },
       order: { createdDate: 'DESC' },
       take,
       skip,
     });
-    return {count,data}
+    return { count, data };
   }
   async findByCondition(condition: any): Promise<Job[]> {
     return await this.jobRepository.find(condition);

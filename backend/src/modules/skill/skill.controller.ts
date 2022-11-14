@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
-import { SkillService } from './city.service';
+import { SkillService } from './skill.service';
 import { SkillCreateDto } from './dto/skillCreateDto';
 
 @Controller('skill')
