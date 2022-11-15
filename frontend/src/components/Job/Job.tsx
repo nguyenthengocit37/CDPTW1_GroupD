@@ -2,9 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ERROR_IMAGE } from '../../common/enum';
 import { getShortDescription, trimString } from '../../common/helper';
-import { City } from '../../types/City';
 import { Job } from '../../types/Job';
-import { Skill } from '../../types/Skill';
 import {
   CompanyImage,
   JobDescription,
@@ -26,7 +24,7 @@ interface props {
 function JobComponent({ data: job }: props) {
   const navigate = useNavigate();
   return (
-    <JobWrapper className="job" onClick={() => navigate(`/job/${job.slug}`)}>
+    <JobWrapper className="job">
       <ImageCompanyWrapper>
         <CompanyImage
           src={job.company.imageUrl || 'error'}
@@ -56,9 +54,7 @@ function JobComponent({ data: job }: props) {
         {job.company.city &&
           job.company.city.length > 0 &&
           job.company.city.map((city) => <CityStyled key={city.name}>{city.name}</CityStyled>)}
-        <DistanceTimeCreatedStyled>
-          {`1 m`}
-        </DistanceTimeCreatedStyled>
+        <DistanceTimeCreatedStyled>{`1 m`}</DistanceTimeCreatedStyled>
       </MoreInfoWrapper>
     </JobWrapper>
   );
