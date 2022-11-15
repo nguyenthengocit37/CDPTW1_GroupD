@@ -199,7 +199,7 @@ export class JobService {
       },
       order: { createdDate: 'DESC' },
       take,
-      skip,
+      ...(skip && { skip: skip }),
     });
     return { count, data };
   }
