@@ -17,3 +17,6 @@ export const getJobs = ({
 export const getJob = ({ slug }: { slug?: string }): Promise<Job> => {
   return axiosClient.get<Job>(`job/${slug}`).then(({ data }) => data);
 };
+export const getRelatedJobs = ({ slug }: { slug?: string }): Promise<Job[]> => {
+  return axiosClient.get<Job[]>(`job/related/${slug}`).then(({ data }) => data);
+};
