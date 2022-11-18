@@ -21,6 +21,8 @@ function DetailPage() {
   const { isLoading: isRelatedLoading, data: relatedJob } = useQuery(['relatedJob', slug], () => {
     return getRelatedJobs({ slug });
   });
+  console.log(relatedJob);
+
   return (
     <PageDetailWrapper>
       <Row>
@@ -45,8 +47,15 @@ function DetailPage() {
             )}
           </MainContentWrapper>
         </Col>
-        <Carousel data={relatedJob} isLoading={isRelatedLoading} />
-      </Row>
+        </Row>
+        <div><h1 style={{fontWeight:'600'}}>Related Jobs</h1></div>
+        {isRelatedLoading ?
+          (<div style={{ textAlign: 'center' }}>
+            <Spin size="large" />
+          </div>) :
+          <Carousel data={relatedJob} isLoading={isRelatedLoading} />
+        }
+
     </PageDetailWrapper>
   );
 }

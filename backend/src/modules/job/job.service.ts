@@ -14,6 +14,7 @@ import { Company } from '@root/entity/Company';
 import { CompanyDto } from './dto/company.dto';
 import { CityService } from '../city/city.service';
 import { City } from '@root/entity/City';
+import { job } from 'cron';
 
 @Injectable()
 export class JobService {
@@ -208,6 +209,13 @@ export class JobService {
   }
   async findOneBySlug(slug: string): Promise<Job> {
     return await this.jobRepository.findOneBy({ slug });
+  }
+  async findRelated(slug: string): Promise<Job[]> {
+    const currentJob = await this.jobRepository.findOneBy({ slug });
+    const skills = currentJob.skills.map(skill => skill.name);
+    const jobs = await this.jobRepository.find();
+    const relatedJobs = jobs.filter(job=>job.skills.some(skill => skills.includes(skill.name)) && job.slug !==currentJob.slug);
+    return relatedJobs
   }
   async findOneByCondition(condition: any): Promise<Job> {
     return await this.jobRepository.findOneBy(condition);
