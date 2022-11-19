@@ -6,6 +6,7 @@ export const JobWrapper = styled.div`
   border-top: 1px solid #e7e7e7;
   background: #fff;
   height: 12rem;
+  border-radius: 10px;
   &:hover {
     cursor: pointer;
     box-shadow: 0 0 6px 0 #c4c7cc;
@@ -42,13 +43,15 @@ export const SkillWrapper = styled.div`
 `;
 export const SkillStyled = styled.div`
   margin: 0 1rem;
-  padding: 4px 5px;
+  padding: 7px 9px;
   background: transparent;
   border: 1px solid #d2d3d3;
   font-weight: normal;
   text-decoration: none;
   line-height: 100%;
   display: inline-block;
+  border-radius: 10px;
+  white-space: nowrap;
   &:hover {
     color: #ea1e30;
     cursor: pointer;

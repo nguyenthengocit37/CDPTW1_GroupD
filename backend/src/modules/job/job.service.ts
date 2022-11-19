@@ -185,7 +185,9 @@ export class JobService {
     page: number;
     city: string;
   }): Promise<{ count: number; data: Job[] }> {
-    const { take = 20, page = 1, keyword, city } = query;
+    const { take = 20, keyword, city } = query;
+    let {page = 1} = query
+    if(keyword)page=1;
     const skip = (page - 1) * take;
     const [data, count] = await this.jobRepository.findAndCount({
       where: {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Form, Input, Select, Spin, Empty, Pagination, PaginationProps } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
@@ -35,6 +35,9 @@ export default function HomePage() {
   const onPageChange: PaginationProps['onChange'] = (page) => {
     setPage(page);
   };
+  useEffect(()=>{
+    if(debounceValue)setPage(1)
+  },[debounceValue])
 
   return (
     <Container>
@@ -53,6 +56,7 @@ export default function HomePage() {
               prefix={<SearchOutlined className="site-form-item-icon" />}
               placeholder="Keyword job..."
               size="large"
+              style={{borderRadius: '10px'}}
               onChange={(element) => setKeyword(element.target.value)}
             />
           </Form.Item>
@@ -62,6 +66,7 @@ export default function HomePage() {
               onChange={(value) => setCitySelected(value)}
               style={{ width: 150 }}
               size="large"
+              className='citySelect'
               loading={isCityLoading}
               defaultValue=""
             >
@@ -94,6 +99,7 @@ export default function HomePage() {
           <div style={{ textAlign: 'center', margin: '2rem 0' }}>
             <Pagination
               defaultCurrent={page}
+              current={page}
               onChange={onPageChange}
               pageSize={20}
               showSizeChanger={false}
