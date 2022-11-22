@@ -2,7 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import { Col, Row, Spin } from 'antd';
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { getJob } from '../../services/api/job/jobApi';
+import Carousel from '../../components/carousel/Carousel';
+import { getJob, getRelatedJobs } from '../../services/api/job/jobApi';
 import { Job } from '../../types/Job';
 import {
   DescriptionWrapper,
@@ -17,6 +18,11 @@ function DetailPage() {
   const { isLoading, data: job } = useQuery(['job', slug], () => {
     return getJob({ slug });
   });
+  const { isLoading: isRelatedLoading, data: relatedJob } = useQuery(['relatedJob', slug], () => {
+    return getRelatedJobs({ slug });
+  });
+  console.log(relatedJob);
+
   return (
     <PageDetailWrapper>
       <Row>
@@ -41,7 +47,15 @@ function DetailPage() {
             )}
           </MainContentWrapper>
         </Col>
-      </Row>
+        </Row>
+        <div><h1 style={{fontWeight:'600'}}>Related Jobs</h1></div>
+        {isRelatedLoading ?
+          (<div style={{ textAlign: 'center' }}>
+            <Spin size="large" />
+          </div>) :
+          <Carousel data={relatedJob} isLoading={isRelatedLoading} />
+        }
+
     </PageDetailWrapper>
   );
 }

@@ -19,6 +19,10 @@ export class JobController {
   findOne(@Param('slug') slug: string) {
     return this.jobService.findOneBySlug(slug);
   }
+  @Get('/related/:slug')
+  findRelated(@Param('slug') slug: string) {
+    return this.jobService.findRelated(slug);
+  }
 
   @Delete(':id')
   remove(@Param('id') id: string) {

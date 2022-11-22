@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Form, Input, Select, Spin, Empty, Pagination, PaginationProps } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
@@ -7,27 +7,37 @@ import JobComponent from '../../components/Job/Job';
 import { useQuery } from '@tanstack/react-query';
 import { getJobs } from '../../services/api/job/jobApi';
 import { Job } from '../../types/Job';
+import { getCities } from '../../services/api/city/cityApi';
+import useDebounce from '../../hooks/useDebounce';
 
 const { Option } = Select;
 
 export default function HomePage() {
   const [page, setPage] = useState(1);
+  const [citySelected, setCitySelected] = useState('');
+  const [keyword, setKeyword] = useState('');
   const [form] = Form.useForm();
-  const onCityChange = (value: string) => {};
+
+  const debounceValue = useDebounce(keyword, 800);
 
   const { isLoading, data } = useQuery(
-    ['jobs', page],
+    ['jobs', page, citySelected, debounceValue],
     () => {
-      return getJobs({ page });
+      return getJobs({ page, city: citySelected, keyword: debounceValue });
     },
     {
       keepPreviousData: true,
     }
   );
-  console.log(data);
+  const { isLoading: isCityLoading, data: cityData } = useQuery(['cities'], () => {
+    return getCities();
+  });
   const onPageChange: PaginationProps['onChange'] = (page) => {
     setPage(page);
   };
+  useEffect(()=>{
+    if(debounceValue)setPage(1)
+  },[debounceValue])
 
   return (
     <Container>
@@ -46,28 +56,30 @@ export default function HomePage() {
               prefix={<SearchOutlined className="site-form-item-icon" />}
               placeholder="Keyword job..."
               size="large"
+              style={{borderRadius: '10px'}}
+              onChange={(element) => setKeyword(element.target.value)}
             />
           </Form.Item>
           <Form.Item name="city">
             <Select
               placeholder="Select a option and change input text above"
-              onChange={onCityChange}
+              onChange={(value) => setCitySelected(value)}
               style={{ width: 150 }}
               size="large"
-              defaultValue="all"
+              className='citySelect'
+              loading={isCityLoading}
+              defaultValue=""
             >
-              <Option value="all">All cities</Option>
-              <Option value="hochiminh">Ho Chi Minh</Option>
-              <Option value="Da Nang">Da Nang</Option>
-              <Option value="Ha Noi">Ha Noi</Option>
+              <Option value="">All cities</Option>
+              {!isCityLoading &&
+                cityData &&
+                cityData.length > 0 &&
+                cityData.map((city) => (
+                  <Option key={city.name} value={city.name}>
+                    {city.name}
+                  </Option>
+                ))}
             </Select>
-          </Form.Item>
-          <Form.Item shouldUpdate>
-            {() => (
-              <Button type="primary" htmlType="submit" size="large">
-                Search
-              </Button>
-            )}
           </Form.Item>
         </Form>
       </SearchWrapper>
@@ -83,9 +95,16 @@ export default function HomePage() {
             <Spin size="large" />
           </div>
         )}
-        {!isLoading && data?.count && (
-          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <Pagination defaultCurrent={page} onChange={onPageChange} pageSize={20} showSizeChanger={false} total={data?.count} />
+        {!isLoading && data && data.count > 0 && (
+          <div style={{ textAlign: 'center', margin: '2rem 0' }}>
+            <Pagination
+              defaultCurrent={page}
+              current={page}
+              onChange={onPageChange}
+              pageSize={20}
+              showSizeChanger={false}
+              total={data.count}
+            />
           </div>
         )}
       </ContentWrapper>
