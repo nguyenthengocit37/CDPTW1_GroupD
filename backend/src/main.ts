@@ -5,9 +5,9 @@ import { AppModule } from './app.module';
 const PORT = 8080;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(PORT);
-  console.log(`App running in ${PORT}`);
+  console.log(`App running in ${PORT}...`);
 }
 bootstrap();
