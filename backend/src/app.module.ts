@@ -22,7 +22,7 @@ import { SkillModule } from './modules/skill/skill.module';
       password: process.env.DB_PASSWORD || 'cdptw2groupD',
       database: process.env.DB_NAME || 'db_a90c6d_groupd',
       entities: ['entity/*{.ts,.js}'],
-      synchronize: true,
+      synchronize: process.env.ENV !== 'production',
       autoLoadEntities: true,
     }),
     ScheduleModule.forRoot(),
