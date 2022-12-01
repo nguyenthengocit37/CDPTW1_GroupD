@@ -9,6 +9,7 @@ import { getJobs } from '../../services/api/job/jobApi';
 import { Job } from '../../types/Job';
 import { getCities } from '../../services/api/city/cityApi';
 import useDebounce from '../../hooks/useDebounce';
+import { useSearchParams } from 'react-router-dom';
 
 const { Option } = Select;
 
@@ -18,6 +19,8 @@ export default function HomePage() {
   const [keyword, setKeyword] = useState('');
   const [skill, setSkill] = useState('');
   const [form] = Form.useForm();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   
   const debounceValue = useDebounce(keyword, 800);
 
@@ -36,10 +39,27 @@ export default function HomePage() {
   const onPageChange: PaginationProps['onChange'] = (page) => {
     setPage(page);
   };
+  
   useEffect(()=>{
     if(debounceValue)setPage(1)
   },[debounceValue])
 
+  useEffect(()=>{
+    let skillQuery = searchParams.get("skill");
+    if(skillQuery){
+      if(skillQuery==='all')skillQuery=''
+      setSkill(skillQuery)
+    }
+    let cityQuery = searchParams.get("city");
+    if(cityQuery){
+      if(cityQuery === 'all') cityQuery ='';
+      setCitySelected(cityQuery)
+    }
+    let keyword = searchParams.get("keyword");
+    if(keyword !== undefined && keyword !== null){
+      setKeyword(keyword)
+    }
+  },[searchParams])
   return (
     <Container>
       <SearchWrapper>
@@ -58,6 +78,7 @@ export default function HomePage() {
               placeholder="Keyword job..."
               size="large"
               style={{borderRadius: '10px'}}
+              value={keyword}
               onChange={(element) => setKeyword(element.target.value)}
             />
           </Form.Item>

@@ -4,6 +4,8 @@ export const HeaderWrapper = styled.div`
   color: #fff;
   font-size: 24px;
   display: flex;
+  gap:50px;
+  padding: 0 50px;
   & a {
     color: #fff;
   }
