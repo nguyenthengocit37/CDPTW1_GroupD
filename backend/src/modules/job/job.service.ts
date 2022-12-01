@@ -184,8 +184,9 @@ export class JobService {
     take: number;
     page: number;
     city: string;
+    skill:string;
   }): Promise<{ count: number; data: Job[] }> {
-    const { take = 20, keyword, city } = query;
+    const { take = 20, keyword, city,skill } = query;
     let {page = 1} = query
     if(keyword)page=1;
     const skip = (page - 1) * take;
@@ -199,6 +200,9 @@ export class JobService {
             ...(city && { name: city }),
           },
         },
+        skills:{
+          ...(skill && { name: skill})
+        }
       },
       order: { createdDate: 'DESC' },
       take,

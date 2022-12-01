@@ -2,16 +2,20 @@ import { Job } from '../../../types/Job';
 import axiosClient from '../config';
 
 export const getJobs = ({
-  page,
-  city,
-  keyword,
+  page=1,
+  city='',
+  keyword='',
+  skill='',
+  take
 }: {
   page?: number;
   city?: string;
   keyword?: string;
+  skill?:string;
+  take?:number
 }): Promise<{ count: number; data: Job[] }> => {
   return axiosClient
-    .get<{ count: number; data: Job[] }>(`job?page=${page}&city=${city}&keyword=${keyword}`)
+    .get<{ count: number; data: Job[] }>(`job?page=${page}&city=${city}&keyword=${keyword}&skill=${skill}&${take && `take=${take}`}`)
     .then(({ data }) => data);
 };
 export const getJob = ({ slug }: { slug?: string }): Promise<Job> => {
