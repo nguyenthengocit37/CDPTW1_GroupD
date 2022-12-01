@@ -9,6 +9,7 @@ import { getJobs } from '../../services/api/job/jobApi';
 import { Job } from '../../types/Job';
 import { getCities } from '../../services/api/city/cityApi';
 import useDebounce from '../../hooks/useDebounce';
+import { useSearchParams } from 'react-router-dom';
 
 const { Option } = Select;
 
@@ -16,14 +17,17 @@ export default function HomePage() {
   const [page, setPage] = useState(1);
   const [citySelected, setCitySelected] = useState('');
   const [keyword, setKeyword] = useState('');
+  const [skill, setSkill] = useState('');
   const [form] = Form.useForm();
+  const [searchParams, setSearchParams] = useSearchParams();
 
+  
   const debounceValue = useDebounce(keyword, 800);
 
   const { isLoading, data } = useQuery(
-    ['jobs', page, citySelected, debounceValue],
+    ['jobs', page, citySelected, debounceValue,skill],
     () => {
-      return getJobs({ page, city: citySelected, keyword: debounceValue });
+      return getJobs({ page, city: citySelected, keyword: debounceValue,skill });
     },
     {
       keepPreviousData: true,
@@ -35,10 +39,27 @@ export default function HomePage() {
   const onPageChange: PaginationProps['onChange'] = (page) => {
     setPage(page);
   };
+  
   useEffect(()=>{
     if(debounceValue)setPage(1)
   },[debounceValue])
 
+  useEffect(()=>{
+    let skillQuery = searchParams.get("skill");
+    if(skillQuery){
+      if(skillQuery==='all')skillQuery=''
+      setSkill(skillQuery)
+    }
+    let cityQuery = searchParams.get("city");
+    if(cityQuery){
+      if(cityQuery === 'all') cityQuery ='';
+      setCitySelected(cityQuery)
+    }
+    let keyword = searchParams.get("keyword");
+    if(keyword !== undefined && keyword !== null){
+      setKeyword(keyword)
+    }
+  },[searchParams])
   return (
     <Container>
       <SearchWrapper>
@@ -57,6 +78,7 @@ export default function HomePage() {
               placeholder="Keyword job..."
               size="large"
               style={{borderRadius: '10px'}}
+              value={keyword}
               onChange={(element) => setKeyword(element.target.value)}
             />
           </Form.Item>
@@ -68,7 +90,7 @@ export default function HomePage() {
               size="large"
               className='citySelect'
               loading={isCityLoading}
-              defaultValue=""
+              value={citySelected}
             >
               <Option value="">All cities</Option>
               {!isCityLoading &&
@@ -86,7 +108,7 @@ export default function HomePage() {
       <ContentWrapper>
         {!isLoading ? (
           data?.data && data?.data.length > 0 ? (
-            data?.data.map((job: Job) => <JobComponent key={job.id} data={job} />)
+            data?.data.map((job: Job) => <JobComponent key={job.id} data={job} setSkill={setSkill} currentSearchSkill={skill} setCitySelected={setCitySelected} />)
           ) : (
             <Empty />
           )

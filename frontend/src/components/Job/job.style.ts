@@ -57,11 +57,23 @@ export const SkillStyled = styled.div`
     cursor: pointer;
     border: 1px solid #ea1e30;
   }
+  &.active {
+    background: #ea1e30;
+    color: #fff;
+  }
+  &.active:hover{
+    opacity: 0.7;
+    color: #fff;
+  }
   span {
     font-size: 16px;
   }
 `;
-export const CityStyled = styled.div``;
+export const CityStyled = styled.div`
+&:hover{
+  color: #ea1e30;
+}
+`;
 export const ImageCompanyWrapper = styled.div`
   width: 15rem;
   height: auto;
