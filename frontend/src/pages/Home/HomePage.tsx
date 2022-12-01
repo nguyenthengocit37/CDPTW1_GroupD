@@ -16,14 +16,15 @@ export default function HomePage() {
   const [page, setPage] = useState(1);
   const [citySelected, setCitySelected] = useState('');
   const [keyword, setKeyword] = useState('');
+  const [skill, setSkill] = useState('');
   const [form] = Form.useForm();
-
+  
   const debounceValue = useDebounce(keyword, 800);
 
   const { isLoading, data } = useQuery(
-    ['jobs', page, citySelected, debounceValue],
+    ['jobs', page, citySelected, debounceValue,skill],
     () => {
-      return getJobs({ page, city: citySelected, keyword: debounceValue });
+      return getJobs({ page, city: citySelected, keyword: debounceValue,skill });
     },
     {
       keepPreviousData: true,
@@ -68,7 +69,7 @@ export default function HomePage() {
               size="large"
               className='citySelect'
               loading={isCityLoading}
-              defaultValue=""
+              value={citySelected}
             >
               <Option value="">All cities</Option>
               {!isCityLoading &&
@@ -86,7 +87,7 @@ export default function HomePage() {
       <ContentWrapper>
         {!isLoading ? (
           data?.data && data?.data.length > 0 ? (
-            data?.data.map((job: Job) => <JobComponent key={job.id} data={job} />)
+            data?.data.map((job: Job) => <JobComponent key={job.id} data={job} setSkill={setSkill} currentSearchSkill={skill} setCitySelected={setCitySelected} />)
           ) : (
             <Empty />
           )

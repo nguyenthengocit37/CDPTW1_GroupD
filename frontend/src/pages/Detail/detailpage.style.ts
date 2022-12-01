@@ -11,4 +11,13 @@ export const TitleWrapper = styled.h2`
   font-size: 2.5rem;
 `;
 export const DescriptionWrapper = styled.div``;
-export const NewJobWrapper = styled.div``;
+export const NewJobWrapper = styled.div`
+  position: sticky;
+  top: 20px;
+`;
+export const NewJobTitle = styled.span`
+  &:hover{
+    cursor: pointer;
+    color: #ea1e30;
+  }
+`

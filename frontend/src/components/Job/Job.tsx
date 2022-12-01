@@ -19,9 +19,12 @@ import {
 
 interface props {
   data: Job;
+  currentSearchSkill: string;
+  setSkill: (skill: string) => void;
+  setCitySelected: (city: string) => void;
 }
 
-function JobComponent({ data: job }: props) {
+function JobComponent({ data: job,currentSearchSkill,setSkill,setCitySelected }: props) {
   const navigate = useNavigate();
   return (
     <JobWrapper className="job">
@@ -44,7 +47,7 @@ function JobComponent({ data: job }: props) {
           {job.skills &&
             job.skills.length > 0 &&
             job.skills.map((skill) => (
-              <SkillStyled key={skill.name}>
+              <SkillStyled key={skill.name} onClick={() => setSkill(currentSearchSkill !== skill.name ? skill.name : '' )} className={currentSearchSkill === skill.name ? 'active' : ''}>
                 <span>{skill.name}</span>
               </SkillStyled>
             ))}
@@ -53,7 +56,7 @@ function JobComponent({ data: job }: props) {
       <MoreInfoWrapper>
         {job.company.city &&
           job.company.city.length > 0 &&
-          job.company.city.map((city) => <CityStyled key={city.name}>{city.name}</CityStyled>)}
+          job.company.city.map((city) => <CityStyled key={city.name} onClick={() =>setCitySelected(city.name)}>{city.name}</CityStyled>)}
         <DistanceTimeCreatedStyled>{`1 m`}</DistanceTimeCreatedStyled>
       </MoreInfoWrapper>
     </JobWrapper>
