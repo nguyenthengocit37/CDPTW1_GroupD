@@ -21,13 +21,12 @@ export default function HomePage() {
   const [form] = Form.useForm();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  
   const debounceValue = useDebounce(keyword, 800);
 
   const { isLoading, data } = useQuery(
-    ['jobs', page, citySelected, debounceValue,skill],
+    ['jobs', page, citySelected, debounceValue, skill],
     () => {
-      return getJobs({ page, city: citySelected, keyword: debounceValue,skill });
+      return getJobs({ page, city: citySelected, keyword: debounceValue, skill });
     },
     {
       keepPreviousData: true,
@@ -39,27 +38,27 @@ export default function HomePage() {
   const onPageChange: PaginationProps['onChange'] = (page) => {
     setPage(page);
   };
-  
-  useEffect(()=>{
-    if(debounceValue)setPage(1)
-  },[debounceValue])
 
-  useEffect(()=>{
-    let skillQuery = searchParams.get("skill");
-    if(skillQuery){
-      if(skillQuery==='all')skillQuery=''
-      setSkill(skillQuery)
+  useEffect(() => {
+    if (debounceValue) setPage(1);
+  }, [debounceValue]);
+
+  useEffect(() => {
+    let skillQuery = searchParams.get('skill');
+    if (skillQuery) {
+      if (skillQuery === 'all') skillQuery = '';
+      setSkill(skillQuery);
     }
-    let cityQuery = searchParams.get("city");
-    if(cityQuery){
-      if(cityQuery === 'all') cityQuery ='';
-      setCitySelected(cityQuery)
+    let cityQuery = searchParams.get('city');
+    if (cityQuery) {
+      if (cityQuery === 'all') cityQuery = '';
+      setCitySelected(cityQuery);
     }
-    let keyword = searchParams.get("keyword");
-    if(keyword !== undefined && keyword !== null){
-      setKeyword(keyword)
+    let keyword = searchParams.get('keyword');
+    if (keyword !== undefined && keyword !== null) {
+      setKeyword(keyword);
     }
-  },[searchParams])
+  }, [searchParams]);
   return (
     <Container>
       <SearchWrapper>
@@ -77,7 +76,7 @@ export default function HomePage() {
               prefix={<SearchOutlined className="site-form-item-icon" />}
               placeholder="Keyword job..."
               size="large"
-              style={{borderRadius: '10px'}}
+              style={{ borderRadius: '10px' }}
               value={keyword}
               onChange={(element) => setKeyword(element.target.value)}
             />
@@ -88,7 +87,7 @@ export default function HomePage() {
               onChange={(value) => setCitySelected(value)}
               style={{ width: 150 }}
               size="large"
-              className='citySelect'
+              className="citySelect"
               loading={isCityLoading}
               value={citySelected}
             >
@@ -108,7 +107,14 @@ export default function HomePage() {
       <ContentWrapper>
         {!isLoading ? (
           data?.data && data?.data.length > 0 ? (
-            data?.data.map((job: Job) => <JobComponent key={job.id} data={job} setSkill={setSkill} currentSearchSkill={skill} setCitySelected={setCitySelected} />)
+            data?.data.map((job: Job) => (
+              <JobComponent
+                key={job.id}
+                data={job}
+                setSkill={setSkill}
+                currentSearchSkill={skill}
+              />
+            ))
           ) : (
             <Empty />
           )

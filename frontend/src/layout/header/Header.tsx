@@ -24,15 +24,15 @@ function Header() {
   });
   const handleNavigate = () => {
     navigate({
-      pathname:'/',
-      search:'city=all&skill=all&keyword=',
+      pathname: '/',
+      search: 'city=all&skill=all&keyword=',
     });
   };
   const onFinish = (values: any) => {
-    const {job: keyword ='',city=''}=values;
+    const { job: keyword = '', city = '' } = values;
     navigate({
-      pathname:'/',
-      search:`keyword=${keyword}&city=${city}&skill=`
+      pathname: '/',
+      search: `keyword=${keyword}&city=${city}&skill=`,
     });
   };
   useEffect(() => {
@@ -86,11 +86,7 @@ function Header() {
             onFinish={onFinish}
           >
             <Form.Item name="job">
-              <Input
-                placeholder="Keyword job..."
-                size="large"
-                style={{ borderRadius: '5px', width: '400px' }}
-              />
+              <Input placeholder="Keyword job..." size="large" style={{ width: '400px' }} />
             </Form.Item>
             <Form.Item name="city">
               <Select
