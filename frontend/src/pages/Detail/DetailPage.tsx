@@ -22,10 +22,10 @@ function DetailPage() {
   const { isLoading, data: job } = useQuery(['job', slug], () => {
     return getJob({ slug });
   });
-  const { isLoading:newJobLoading, data: newJobs } = useQuery(['newJobs'], () => {
-    return getJobs({ take:5 });
+  const { isLoading: newJobLoading, data: newJobs } = useQuery(['newJobs'], () => {
+    return getJobs({ take: 5 });
   });
-  
+
   const { isLoading: isRelatedLoading, data: relatedJob } = useQuery(['relatedJob', slug], () => {
     return getRelatedJobs({ slug });
   });
@@ -37,19 +37,27 @@ function DetailPage() {
           <NewJobWrapper>
             <List
               itemLayout="horizontal"
-              dataSource={newJobs?.data}
+              dataSource={newJobs?.data.filter((job) => job.slug !== slug)}
               loading={newJobLoading}
-              style={{background: '#fff',padding:'0 10px',borderRadius:'20px'}}
-              header={<div style={{fontSize:'24px',fontWeight:'600'}}>New Jobs</div>}
+              style={{ background: '#fff', padding: '0 10px', borderRadius: '20px' }}
+              header={<div style={{ fontSize: '24px', fontWeight: '600' }}>New Jobs</div>}
               renderItem={(item) => (
                 <List.Item>
                   <List.Item.Meta
-                    avatar={<Image src={item.company.imageUrl || 'error'}
-                    fallback={ERROR_IMAGE}
-                    height={50}
-                    width={50} />}
-                    title={<NewJobTitle onClick={() => navigate(`/job/${item.slug}`)}>{item.jobTitle.title}</NewJobTitle>}
-                    description={ getShortDescription(item.description, '.job-details__paragraph')}
+                    avatar={
+                      <Image
+                        src={item.company.imageUrl || 'error'}
+                        fallback={ERROR_IMAGE}
+                        height={50}
+                        width={50}
+                      />
+                    }
+                    title={
+                      <NewJobTitle onClick={() => navigate(`/job/${item.slug}`)}>
+                        {item.jobTitle.title}
+                      </NewJobTitle>
+                    }
+                    description={getShortDescription(item.description, '.job-details__paragraph')}
                   />
                 </List.Item>
               )}
@@ -75,7 +83,7 @@ function DetailPage() {
           </MainContentWrapper>
         </Col>
       </Row>
-      <div style={{marginTop:'20px'}}>
+      <div style={{ marginTop: '20px' }}>
         <h1 style={{ fontWeight: '600' }}>Related Jobs</h1>
       </div>
       {isRelatedLoading ? (
