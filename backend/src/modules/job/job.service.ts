@@ -49,32 +49,44 @@ export class JobService {
   async crawlDataViaPuppeteer() {
     const DOMAIN_URL = 'https://itviec.com';
     const browser = await puppeteer.launch({
-      headless: false,
-      defaultViewport: null,
-      args: ['--window-size=1920,1080'],
+      headless: true,
+      args: [
+          '--disable-gpu',
+          '--disable-setuid-sandbox',
+          '--no-sandbox',
+      ]
     });
+    const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36';
     const page = await browser.newPage();
-    await page.goto(`${DOMAIN_URL}/it-jobs`);
-
+    await page.setViewport({
+      width: 1200,
+      height: 800
+    })
+    await page.setUserAgent(userAgent);
+    await page.goto(`${DOMAIN_URL}/it-jobs`, { waitUntil: 'domcontentloaded'});
     let numberOfJobs = 0;
     const nextButtonSelector = '.search-page__jobs-pagination a[rel="next"]';
+    await page.waitForSelector(nextButtonSelector);
     while (await page.$(nextButtonSelector)) {
       const jobUrls: string[] = await page.evaluate(() => {
         const jobUrlSelector = '.job .job__description .title a';
         return Array.from(document.querySelectorAll(jobUrlSelector)).map((job: Element) => job.getAttribute('href'));
       });
-
       // crawl from job detail page
       for (const jobUrl of jobUrls) {
         const newPage = await browser.newPage();
-        await newPage.goto(`${DOMAIN_URL}${jobUrl}`, {
-          waitUntil: 'networkidle0',
+        await newPage.setViewport({
+          width: 1200,
+          height: 800
+        })
+        await newPage.setUserAgent(userAgent);
+        await newPage.goto(`${DOMAIN_URL}${jobUrl}`,{
+          waitUntil: 'networkidle2',
         });
         const imageSelector = '.jd-page__employer-overview .employer-long-overview__logo img';
         // wait for image to be loaded
         await newPage.waitForSelector(imageSelector, {
           visible: true,
-          timeout: 5000, //5 second
         });
 
         const job: JobCrawl = await newPage.evaluate(() => {
@@ -125,7 +137,7 @@ export class JobService {
         });
         const jobExist: Job = await this.jobRepository.findOneBy({ slug });
         if (jobExist) {
-          newPage.close();
+          await newPage.close();
           console.log('job exist:::', jobExist.jobTitle.title);
           continue;
         }
@@ -175,6 +187,8 @@ export class JobService {
       await page.click('a[rel="next"]');
       await page.waitForSelector('.job', { visible: true });
     }
+    await page.close();
+    await browser.close();
     numberOfJobs = 0;
     console.log('crawl done::::');
     return 'success';

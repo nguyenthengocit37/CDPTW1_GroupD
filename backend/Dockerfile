@@ -1,17 +1,25 @@
 FROM node:16-alpine
+RUN apk add --no-cache \
+      chromium \
+      nss \
+      freetype \
+      harfbuzz \
+      ca-certificates \
+      ttf-freefont \
+      nodejs \
+      npm
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
 #App directory
 WORKDIR /usr/src/app/backend
-ENV DB_HOST='MYSQL5045.site4now.net'
-ENV DB_USER='a90c6d_groupd'
-ENV DB_PASSWORD='cdptw2groupD'
-ENV DB_NAME='db_a90c6d_groupd'
+
 COPY package*.json ./
-
-RUN npm install
-
 #Copy all from current directory to App directorys
 COPY . .
 
-RUN npm i -g @nestjs/cli
+RUN npm install
+RUN npm  i -g @nestjs/cli
 
-CMD [ "npm","run","start:dev"]
+CMD ["npm","run","start:dev"]
