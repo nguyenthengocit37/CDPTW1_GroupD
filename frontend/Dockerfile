@@ -1,12 +1,21 @@
-FROM node:16-alpine
-#App directory
+FROM node:16-alpine AS builder
+
 WORKDIR /usr/src/app/frontend
 
 COPY ["package*.json", "./"]
 
 RUN npm install
 
-#Copy all from current directory to App directorys
 COPY . .
 
-CMD [ "npm", "start" ]
+RUN npm run build
+
+FROM nginx:alpine
+
+WORKDIR /usr/share/nginx/html
+
+RUN rm -rf *
+
+COPY --from=builder /usr/src/app/frontend/dist .
+
+ENTRYPOINT ["nginx", "-g", "daemon off;"]

@@ -5,15 +5,17 @@ services:
     container_name: db-nestjs
     restart: always
     environment:
-      - MYSQL_DATABASE=cdptw1_groupd
-      - MYSQL_ROOT_PASSWORD=groupd
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
       - MYSQL_ALLOW_EMPTY_PASSWOR=ok
-      - MYSQL_USER=admin
-      - MYSQL_PASSWORD=admin
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
     expose:
       - "3306"
     ports:
       - "3306:3306"
+    env_file:
+      - .env
     networks:
       - groupd
     volumes:
@@ -23,34 +25,39 @@ services:
     container_name: docker-nestjs
     build:
       context: ./backend
+      dockerfile: Dockerfile.development
     depends_on:
       - db-service
     ports:
       - 8080:8080
     environment:
-      NODE_ENV: development
       DB_HOST: db-nestjs
       DB_PORT: 3306
-      DB_USER: admin
-      DB_PASSWORD: admin
-      DB_NAME: cdptw1_groupd
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    env_file:
+      - .env
     networks:
       - groupd
     volumes:
-      - ./backend/src:/usr/src/app/backend/src
+      - ./backend:/usr/src/app/backend
       - /usr/src/app/backend/node_modules
   frontend-service:
     container_name: docker-react-app
     build:
       context: ./frontend
+      dockerfile: Dockerfile.development
     ports:
       - 3001:3000
+    environment:
+      REACT_APP_API_URL: http://host.docker.internal:8080
     networks:
       - groupd
     depends_on:
       - backend-service
     volumes:
-      - ./frontend/src:/usr/src/app/frontend/src
+      - ./frontend:/usr/src/app/frontend
       - /usr/src/app/frontend/node_modules
 networks:
   groupd:
