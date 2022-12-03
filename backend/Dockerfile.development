@@ -16,10 +16,12 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
 WORKDIR /usr/src/app/backend
 
 COPY package*.json ./
+
+RUN npm install
+
 #Copy all from current directory to App directorys
 COPY . .
 
-RUN npm install
 RUN npm  i -g @nestjs/cli
 
 CMD ["npm","run","start:dev"]
